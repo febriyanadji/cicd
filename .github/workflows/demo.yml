@@ -19,6 +19,7 @@ jobs:
       # - run: echo "🍏 This job's status is ${{ job.status }}."
   Testing-Docker-Image:
     runs-on: ubuntu-latest
+    needs: Build-Docker-Image
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
