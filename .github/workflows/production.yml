@@ -26,16 +26,17 @@ jobs:
         run: docker run --rm ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7} sleep 1
       - name: Push Docker Image
         run: docker push ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
-  Deploy-to-Staging:
+  Deploy-to-Production:
     runs-on: ubuntu-latest
     needs: Build-Test-Push
+    environment: production
     env:
-      DOCKER_HOST: ssh://ubuntu@${{ secrets.SSH_HOST_PROD }}
+      DOCKER_HOST: ssh://ubuntu@${{ secrets.SSH_HOST }}
     steps:
       - name: Setup SSH Client
         uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Bypass SSH Host Key Checking
         run: |
           mkdir -p ~/.ssh
