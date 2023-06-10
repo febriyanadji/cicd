@@ -28,13 +28,14 @@ jobs:
     # permissions:
     #   packages: read
     steps:
-      - name: Setup SSH
+      - name: Setup SSH Private Key 
         run: |
-          - eval $(ssh-agent -s)
-          - ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
-          - mkdir -p ~/.ssh
-          - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-          - export DOCKER_HOST=ssh://ubuntu@13.212.189.175
+          eval $(ssh-agent -s)
+          ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
+          mkdir -p ~/.ssh
+          '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+      - name: Setup Docker Host 
+        run: export DOCKER_HOST=ssh://ubuntu@13.212.189.175
     
       # - name: Auth Docker
       #   run: |
