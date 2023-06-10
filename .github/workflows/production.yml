@@ -41,6 +41,8 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+      - name: Check out repository code
+        uses: actions/checkout@v3
       - name: Pull Docker Image
         run: docker pull ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
       - name: Stop and Remove Existing Container
