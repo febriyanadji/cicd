@@ -51,4 +51,5 @@ jobs:
           docker run --detach --label traefik.enable=true \
           --label "traefik.http.routers.${{ env.CONTAINER_NAME }}.rule=Host(\`${{ env.DOMAIN }}\`)" \
           --label traefik.http.services.${{ env.CONTAINER_NAME }}.loadbalancer.server.port=3000 \
+          --env VERSION=${GITHUB_SHA::7} \
           --name ${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}

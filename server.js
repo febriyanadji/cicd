@@ -3,7 +3,7 @@ const app = express()
 const port = 3000
 
 app.get('/', (req, res) => {
-  res.json({success: true, message: "Selamat datang di backendnya febriyan"})
+  res.json({success: true, message: `Selamat datang di backendnya febriyan, versi saat ini adalah ${process.env.VERSION}`})
 })
 
 app.get('/products', (req, res) => {
