@@ -19,7 +19,7 @@ jobs:
       - name: Building docker image
         run: docker build --tag ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7} .
       - name: Testing docker image
-        run: sleep 1
+        run: docker run --rm ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7} npm run test
       - name: Push docker image
         run: docker push ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
   Deploy-to-Staging:
@@ -28,10 +28,11 @@ jobs:
     env:
       DOCKER_HOST: ssh://${{ secrets.SSH_USERNAME_STG }}@${{ secrets.SSH_HOST_STG }}
     steps:
-      - uses: webfactory/ssh-agent@v0.7.0
+      - name: Setup SSH Client
+        uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_STG }}
-      - name: Setup SSH Private Key 
+      - name: Bypass SSH Host Key Checking
         run: |
           mkdir -p ~/.ssh
           echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
@@ -43,4 +44,7 @@ jobs:
           docker container rm $CONTAINER_NAME || true
       - name: Deploy
         run: |
-          docker run --detach --publish 80:3000 --name $CONTAINER_NAME ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
+          docker run --detach --label traefik.enable=true \
+          --label traefik.http.routers.${{ env.CONTAINER_NAME }}.rule=Host(`test-stg.wamika.my.id`) \
+          --label traefik.http.services.${{ env.CONTAINER_NAME }}.loadbalancer.server.port=3000
+          --name $CONTAINER_NAME ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
