@@ -25,12 +25,12 @@ jobs:
   Deploy-to-Staging:
     runs-on: ubuntu-latest
     needs: Build-Test-Push
-    permissions:
-      packages: read
+    # permissions:
+    #   packages: read
     steps:
-      - name: Auth Docker
-        run: |
-          docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} $REGISTRY
+      # - name: Auth Docker
+      #   run: |
+      #     docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} $REGISTRY
       - name: Stop and Remove Existing Container
         run: |
           docker container stop $CONTAINER_NAME || true
