@@ -8,12 +8,12 @@ jobs:
       # contents: read
       packages: write
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
       - name: Auth Docker
         run: docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
+      - name: Check out repository code
+        uses: actions/checkout@v3
       - name: Building docker image
-        run: docker build -t ghcr.io/${{ github.repository }} .
+        run: docker build -t ghcr.io/${{ github.repository }}:${GITHUB_SHA::7} .
       - name: Push docker image
         run: docker push ghcr.io/${{ github.repository }}
       # - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
