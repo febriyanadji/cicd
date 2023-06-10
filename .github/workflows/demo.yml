@@ -12,11 +12,11 @@ jobs:
       packages: write
     steps:
       - name: Auth Docker
-        run: docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} $REGISTRY
+        run: docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} $REGISTRY
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Building docker image
-        run: docker build -t $IMAGE_NAME:${GITHUB_SHA::7} .
+        run: docker build --tag $IMAGE_NAME:${GITHUB_SHA::7} .
       - name: Testing docker image
         run: sleep 1
       - name: Push docker image
@@ -28,7 +28,7 @@ jobs:
       packages: read
     steps:
       - name: Auth Docker
-        run: docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} $REGISTRY
+        run: docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} $REGISTRY
       - name: Stop and Remove Existing Container
         run: |
           docker container stop $CONTAINER_NAME || true
@@ -36,7 +36,7 @@ jobs:
       - name: Pull Docker Image
         run: docker pull $IMAGE_NAME:${GITHUB_SHA::7}
       - name: Deploy
-        run: docker run -d -p 80:3000 $IMAGE_NAME:${GITHUB_SHA::7} --name $CONTAINER_NAME
+        run: docker run --detach --publish 80:3000 --name $CONTAINER_NAME $IMAGE_NAME:${GITHUB_SHA::7}
       - name: Delay
         run: sleep 2
       - name: Test
