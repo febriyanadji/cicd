@@ -1,6 +1,9 @@
 name: Staging Workflow
-run-name: Staging Workflow
-on: [push]
+run-name: Deploying to Staging 🚀
+on:
+  push:
+    branches:
+      - develop
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ghcr.io/${{ github.repository }}
