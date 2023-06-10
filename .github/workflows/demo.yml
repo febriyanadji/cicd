@@ -33,7 +33,11 @@ jobs:
         run: |
           docker container stop $CONTAINER_NAME || true
           docker container rm $CONTAINER_NAME || true
+      - name: Push Docker Image
+        run: docker pull $IMAGE_NAME:${GITHUB_SHA::7}
       - name: Deploy
         run: docker run -d -p 80:3000 $IMAGE_NAME:${GITHUB_SHA::7} --name $CONTAINER_NAME
-      - name: Check
-        run: docker ps -a
+      - name: Delay
+        run: sleep 2
+      - name: Test
+        run: curl http://localhost:80
