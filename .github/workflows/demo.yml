@@ -45,6 +45,6 @@ jobs:
       - name: Deploy
         run: |
           docker run --detach --label traefik.enable=true \
-          --label traefik.http.routers.${{ env.CONTAINER_NAME }}.rule="Host(`test-stg.wamika.my.id`)" \
+          --label "traefik.http.routers.${{ env.CONTAINER_NAME }}.rule=Host(\`test-stg.wamika.my.id\`)" \
           --label traefik.http.services.${{ env.CONTAINER_NAME }}.loadbalancer.server.port=3000 \
           --name $CONTAINER_NAME ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
