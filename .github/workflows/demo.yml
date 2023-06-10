@@ -2,27 +2,18 @@ name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 jobs:
-  Build-Docker-Image:
+  Build-Test-Push:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Building docker image
-        run: docker build -t new .
-      - name: Checking docker image
-        run: docker image ls
+        run: docker build -t ghcr.io/${{ github.repository }} .
+      - name: Push docker image
+        run: docker push ghcr.io/${{ github.repository }}
       # - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       # - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       # - name: List files in the repository
       #   run: |
       #     ls ${{ github.workspace }}
       # - run: echo "🍏 This job's status is ${{ job.status }}."
-  Testing-Docker-Image:
-    runs-on: ubuntu-latest
-    needs: Build-Docker-Image
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - name: Checking docker image
-        run: docker image ls
-    
