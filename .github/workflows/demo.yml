@@ -28,15 +28,13 @@ jobs:
     # permissions:
     #   packages: read
     steps:
-      # - name: Setup SSH Private Key 
-      #   run: |
-      #     eval $(ssh-agent -s)
-      #     ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
-      #     mkdir -p ~/.ssh
-      #     echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
       - uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Setup SSH Private Key 
+        run: |
+          mkdir -p ~/.ssh
+          echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
       - name: Setup Docker Host 
         run: export DOCKER_HOST=ssh://ubuntu@13.212.189.175
     
