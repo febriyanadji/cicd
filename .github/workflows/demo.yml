@@ -4,7 +4,7 @@ on: [push]
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ghcr.io/${{ github.repository }}
-  CONTAINER_NAME: ${{ github.actor }}-stg
+  CONTAINER_NAME: ${{ github.actor }}
   DOMAIN: ${{ github.actor }}-stg.wamika.my.id
 jobs:
   Build-Test-Push:
@@ -41,11 +41,11 @@ jobs:
         run: docker pull ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
       - name: Stop and Remove Existing Container
         run: |
-          docker container stop $CONTAINER_NAME || true
-          docker container rm $CONTAINER_NAME || true
+          docker container stop ${{ env.CONTAINER_NAME }} || true
+          docker container rm ${{ env.CONTAINER_NAME }} || true
       - name: Deploy
         run: |
           docker run --detach --label traefik.enable=true \
           --label "traefik.http.routers.${{ env.CONTAINER_NAME }}.rule=Host(\`${{ env.DOMAIN }}\`)" \
           --label traefik.http.services.${{ env.CONTAINER_NAME }}.loadbalancer.server.port=3000 \
-          --name $CONTAINER_NAME ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
+          --name ${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
