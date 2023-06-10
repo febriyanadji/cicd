@@ -7,15 +7,18 @@ jobs:
     permissions:
       # contents: read
       packages: write
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ghcr.io/${{ github.repository }}:${GITHUB_SHA::7}
     steps:
       - name: Auth Docker
-        run: docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
+        run: docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} $REGISTRY
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Building docker image
-        run: docker build -t ghcr.io/${{ github.repository }}:${GITHUB_SHA::7} .
+        run: docker build -t $IMAGE_NAME .
       - name: Push docker image
-        run: docker push ghcr.io/${{ github.repository }}
+        run: docker push $IMAGE_NAME
       # - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       # - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       # - name: List files in the repository
