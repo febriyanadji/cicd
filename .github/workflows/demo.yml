@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/${{ github.repository }}:${{ github.sha }}
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
   CONTAINER_NAME: belajarcicd-stg
 jobs:
   Build-Test-Push:
@@ -17,31 +17,30 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Building docker image
-        run: docker build --tag ${{ env.IMAGE_NAME }} .
+        run: docker build --tag ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7} .
       - name: Testing docker image
         run: sleep 1
       - name: Push docker image
-        run: docker push ${{ env.IMAGE_NAME }}
+        run: docker push ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
   Deploy-to-Staging:
     runs-on: ubuntu-latest
     needs: Build-Test-Push
     env:
-      DOCKER_HOST: ssh://ubuntu@13.212.189.175
+      DOCKER_HOST: ssh://${{ secrets.SSH_USERNAME_STG }}@${{ secrets.SSH_HOST_STG }}
     steps:
       - uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_STG }}
       - name: Setup SSH Private Key 
         run: |
           mkdir -p ~/.ssh
           echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
       - name: Pull Docker Image
-        run: |
-          docker pull ${{ env.IMAGE_NAME }}
+        run: docker pull ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
       - name: Stop and Remove Existing Container
         run: |
           docker container stop $CONTAINER_NAME || true
           docker container rm $CONTAINER_NAME || true
       - name: Deploy
         run: |
-          docker run --detach --publish 80:3000 --name $CONTAINER_NAME ${{ env.IMAGE_NAME }}
+          docker run --detach --publish 80:3000 --name $CONTAINER_NAME ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
